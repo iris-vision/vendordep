@@ -1,24 +1,24 @@
 {
-    "fileName": "ExampleVendorJson.json",
-    "name": "ExampleVendorDep",
+    "fileName": "iris.json",
+    "name": "IrisLib",
     "version": "0.0.1",
     "frcYear": "2024",
-    "uuid": "Generate A Unique GUID https://guidgenerator.com/online-guid-generator.aspx and insert it here", This line is to purposely make this fail to parse
+    "uuid": "99421992-eeb9-4b84-be3c-b696f8843461",
     "mavenUrls": [
         "ThisNeedsToBeTheRootMavenUrl"
     ],
     "jsonUrl": "InsertSomeUrlHere",
     "javaDependencies": [
         {
-            "groupId": "com.vendor.frc",
-            "artifactId": "Vendor-java",
+            "groupId": "dev.irisvision",
+            "artifactId": "iris-java",
             "version": "0.0.1"
         }
     ],
     "jniDependencies": [
         {
-            "groupId": "com.vendor.frc",
-            "artifactId": "Vendor-driver",
+            "groupId": "dev.irisvision",
+            "artifactId": "iris-driver",
             "version": "0.0.1",
             "skipInvalidPlatforms": true,
             "isJar": false,
@@ -35,10 +35,10 @@
     ],
     "cppDependencies": [
         {
-            "groupId": "com.vendor.frc",
-            "artifactId": "Vendor-cpp",
+            "groupId": "dev.irisvision",
+            "artifactId": "iris-cpp",
             "version": "0.0.1",
-            "libName": "Vendor",
+            "libName": "IrisLib",
             "headerClassifier": "headers",
             "sharedLibrary": false,
             "skipInvalidPlatforms": true,
@@ -53,10 +53,10 @@
             ]
         },
         {
-            "groupId": "com.vendor.frc",
-            "artifactId": "Vendor-driver",
+            "groupId": "dev.irisvision",
+            "artifactId": "iris-driver",
             "version": "0.0.1",
-            "libName": "VendorDriver",
+            "libName": "IrisDriver",
             "headerClassifier": "headers",
             "sharedLibrary": false,
             "skipInvalidPlatforms": true,

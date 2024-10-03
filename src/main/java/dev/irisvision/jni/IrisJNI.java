@@ -1,11 +1,11 @@
-package com.vendor.jni;
+package dev.irisvision.jni;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Demo class for loading the driver via JNI.
  */
-public class VendorJNI {
+public class IrisJNI {
   static boolean libraryLoaded = false;
 
   /**
@@ -45,7 +45,7 @@ public class VendorJNI {
     if (libraryLoaded) {
       return;
     }
-    System.loadLibrary("VendorDriver");
+    System.loadLibrary("IrisDriver");
     libraryLoaded = true;
   }
 
