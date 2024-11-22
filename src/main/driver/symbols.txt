@@ -1,4 +1,0 @@
-JNI_OnLoad
-JNI_OnUnload
-Java_dev_irisvision_jni_IrisJNI_initialize
-c_doThing

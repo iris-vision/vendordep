@@ -12,51 +12,15 @@
         {
             "groupId": "dev.irisvision",
             "artifactId": "iris-java",
-            "version": "0.0.1"
-        }
-    ],
-    "jniDependencies": [
-        {
-            "groupId": "dev.irisvision",
-            "artifactId": "iris-driver",
-            "version": "0.0.1",
-            "skipInvalidPlatforms": true,
-            "isJar": false,
-            "validPlatforms": [
-                "windowsx86-64",
-                "windowsx86",
-                "linuxarm64",
-                "linuxx86-64",
-                "linuxathena",
-                "linuxarm32",
-                "osxuniversal"
-            ]
+            "version": "2025.0.0-dev"
         }
     ],
     "cppDependencies": [
         {
             "groupId": "dev.irisvision",
             "artifactId": "iris-cpp",
-            "version": "0.0.1",
+            "version": "2025.0.0-dev",
             "libName": "IrisLib",
-            "headerClassifier": "headers",
-            "sharedLibrary": false,
-            "skipInvalidPlatforms": true,
-            "binaryPlatforms": [
-                "windowsx86-64",
-                "windowsx86",
-                "linuxarm64",
-                "linuxx86-64",
-                "linuxathena",
-                "linuxarm32",
-                "osxuniversal"
-            ]
-        },
-        {
-            "groupId": "dev.irisvision",
-            "artifactId": "iris-driver",
-            "version": "0.0.1",
-            "libName": "IrisDriver",
             "headerClassifier": "headers",
             "sharedLibrary": false,
             "skipInvalidPlatforms": true,
