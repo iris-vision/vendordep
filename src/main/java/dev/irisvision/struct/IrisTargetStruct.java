@@ -13,8 +13,8 @@ public class IrisTargetStruct implements Struct<IrisTarget> {
     }
 
     @Override
-    public String getTypeString() {
-        return "struct:IrisTarget";
+    public String getTypeName() {
+        return "IrisTarget";
     }
 
     @Override

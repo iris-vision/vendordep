@@ -12,8 +12,8 @@ public class IrisResultStruct implements Struct<IrisResult> {
     }
 
     @Override
-    public String getTypeString() {
-        return "struct:IrisResult";
+    public String getTypeName() {
+        return "IrisResult";
     }
 
     @Override
