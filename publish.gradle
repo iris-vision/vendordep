@@ -2,7 +2,7 @@ apply plugin: 'maven-publish'
 
 ext.licenseFile = files("$rootDir/LICENSE.txt")
 
-def pubVersion = '0.0.1'
+def pubVersion = '2025.0.0-dev'
 
 def outputsFolder = file("$buildDir/outputs")
 
@@ -42,11 +42,11 @@ ext.addTaskToCopyAllOutputs = { task ->
     copyAllOutputs.from task.archiveFile
 }
 
-def artifactGroupId = 'com.vendor.frc'
-def baseArtifactId = 'Vendor'
-def driverZipBaseName = "_GROUP_com_vendor_frc_ID_${baseArtifactId}-driver_CLS"
-def zipBaseName = "_GROUP_com_vendor_frc_ID_${baseArtifactId}-cpp_CLS"
-def javaBaseName = "_GROUP_com_vendor_frc_ID_${baseArtifactId}-java_CLS"
+def artifactGroupId = 'dev.irisvision'
+def baseArtifactId = 'IrisLib'
+def driverZipBaseName = "_GROUP_dev_irisvision_ID_${baseArtifactId}-driver_CLS"
+def zipBaseName = "_GROUP_dev_irisvision_ID_${baseArtifactId}-cpp_CLS"
+def javaBaseName = "_GROUP_dev_irisvision_ID_${baseArtifactId}-java_CLS"
 
 task cppHeadersZip(type: Zip) {
     destinationDirectory = outputsFolder
