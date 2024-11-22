@@ -1,7 +1,7 @@
 {
     "fileName": "iris.json",
     "name": "IrisLib",
-    "version": "0.0.1",
+    "version": "2025.0.0-dev",
     "frcYear": "2025",
     "uuid": "99421992-eeb9-4b84-be3c-b696f8843461",
     "mavenUrls": [
@@ -11,14 +11,15 @@
     "javaDependencies": [
         {
             "groupId": "dev.irisvision",
-            "artifactId": "iris-java",
+            "artifactId": "IrisLib-java",
             "version": "2025.0.0-dev"
         }
     ],
+    "jniDependencies": [],
     "cppDependencies": [
         {
             "groupId": "dev.irisvision",
-            "artifactId": "iris-cpp",
+            "artifactId": "IrisLib-cpp",
             "version": "2025.0.0-dev",
             "libName": "IrisLib",
             "headerClassifier": "headers",
