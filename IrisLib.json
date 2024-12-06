@@ -1,13 +1,13 @@
 {
-    "fileName": "iris.json",
+    "fileName": "IrisLib.json",
     "name": "IrisLib",
     "version": "2025.0.0-dev",
     "frcYear": "2025",
     "uuid": "99421992-eeb9-4b84-be3c-b696f8843461",
     "mavenUrls": [
-        "ThisNeedsToBeTheRootMavenUrl"
+        "https://iris-vision.github.io/repo/maven"
     ],
-    "jsonUrl": "InsertSomeUrlHere",
+    "jsonUrl": "https://iris-vision.github.io/repo/IrisLib.json",
     "javaDependencies": [
         {
             "groupId": "dev.irisvision",
