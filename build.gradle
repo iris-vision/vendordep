@@ -1,20 +1,21 @@
 plugins {
-  id 'cpp'
-  id 'java'
-  id 'google-test'
-  id 'edu.wpi.first.wpilib.repositories.WPILibRepositoriesPlugin' version '2020.2'
-  id 'edu.wpi.first.NativeUtils' version '2025.6.0'
-  id 'edu.wpi.first.GradleJni' version '1.1.0'
-  id 'edu.wpi.first.GradleVsCode' version '2.1.0'
+    id 'cpp'
+    id 'java'
+    id 'google-test'
+    id "com.diffplug.spotless" version '6.25.0'
+    id 'edu.wpi.first.wpilib.repositories.WPILibRepositoriesPlugin' version '2020.2'
+    id 'edu.wpi.first.NativeUtils' version '2025.6.0'
+    id 'edu.wpi.first.GradleJni' version '1.1.0'
+    id 'edu.wpi.first.GradleVsCode' version '2.1.0'
 }
 
 repositories {
-  mavenCentral()
+    mavenCentral()
 }
 if (project.hasProperty('releaseMode')) {
-  wpilibRepositories.addAllReleaseRepositories(project)
+    wpilibRepositories.addAllReleaseRepositories(project)
 } else {
-  wpilibRepositories.addAllDevelopmentRepositories(project)
+    wpilibRepositories.addAllDevelopmentRepositories(project)
 }
 
 // Apply C++ configuration
@@ -36,44 +37,89 @@ dependencies {
     implementation "com.fasterxml.jackson.core:jackson-databind:2.15.2"
 }
 
+apply plugin: 'com.diffplug.spotless'
+
+spotless {
+    java {
+        target fileTree('.') {
+            include '**/*.java'
+            exclude '**/build/**', '**/build-*/**'
+        }
+        toggleOffOn()
+        googleJavaFormat('1.15.0')
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+    groovyGradle {
+        target fileTree('.') {
+            include '**/*.gradle'
+            exclude '**/build/**', '**/build-*/**'
+        }
+        greclipse()
+        indentWithSpaces(4)
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+    format 'xml', {
+        target fileTree('.') {
+            include '**/*.xml'
+            exclude '**/build/**', '**/build-*/**'
+        }
+        eclipseWtp('xml')
+        trimTrailingWhitespace()
+        indentWithSpaces(2)
+        endWithNewline()
+    }
+    format 'misc', {
+        target fileTree('.') {
+            include '**/*.md', '**/.gitignore'
+            exclude '**/build/**', '**/build-*/**'
+        }
+        trimTrailingWhitespace()
+        indentWithSpaces(2)
+        endWithNewline()
+    }
+}
+
 // Set up exports properly
 nativeUtils {
-  exportsConfigs {
-    // Main library is just default empty. This will export everything
-    Vendor {
+    exportsConfigs {
+        // Main library is just default empty. This will export everything
+        Vendor {
+        }
     }
-  }
 }
 
 model {
-  components {
-    Vendor(NativeLibrarySpec) {
-      sources {
-        cpp {
-          source {
-            srcDirs 'src/main/native/cpp'
-            include '**/*.cpp'
-          }
-          exportedHeaders {
-            srcDirs 'src/main/native/include'
-          }
-        }
-      }
-      nativeUtils.useRequiredLibrary(it, 'wpilib_shared')
-    }
-  }
-  testSuites {
-    VendorTest {
-        sources.cpp {
-            source {
-                srcDir 'src/test/native/cpp'
-                include '**/*.cpp'
+    components {
+        Vendor(NativeLibrarySpec) {
+            sources {
+                cpp {
+                    source {
+                        srcDirs 'src/main/native/cpp'
+                        include '**/*.cpp'
+                    }
+                    exportedHeaders {
+                        srcDirs 'src/main/native/include'
+                    }
+                }
             }
+            nativeUtils.useRequiredLibrary(it, 'wpilib_shared')
         }
-
-        nativeUtils.useRequiredLibrary(it, "wpilib_executable_shared", "googletest_static")
     }
-  }
+    testSuites {
+        VendorTest {
+            sources.cpp {
+                source {
+                    srcDir 'src/test/native/cpp'
+                    include '**/*.cpp'
+                }
+            }
+
+            nativeUtils.useRequiredLibrary(it, "wpilib_executable_shared", "googletest_static")
+        }
+    }
 }
 
 apply from: 'publish.gradle'
