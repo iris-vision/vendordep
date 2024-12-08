@@ -1,13 +1,19 @@
 package dev.irisvision.struct;
 
 import dev.irisvision.IrisTarget;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.numbers.N2;
+import edu.wpi.first.math.numbers.N4;
+import edu.wpi.first.math.struct.MatrixStruct;
 import edu.wpi.first.util.struct.Struct;
 import java.nio.ByteBuffer;
 
 public class IrisTargetStruct implements Struct<IrisTarget> {
+  private static final MatrixStruct<N4, N2> cornerSchema = Matrix.getStruct(Nat.N4(), Nat.N2());
+
   @Override
   public Class<IrisTarget> getTypeClass() {
     return IrisTarget.class;
@@ -21,15 +27,15 @@ public class IrisTargetStruct implements Struct<IrisTarget> {
   @Override
   public int getSize() {
     return kSizeInt32
-        + 2 * Transform3d.struct.getSize()
-        + 2 * kSizeDouble
-        + 2 * Rotation2d.struct.getSize()
-        + 4 * Translation2d.struct.getSize();
+            + 2 * Transform3d.struct.getSize()
+            + 2 * kSizeDouble
+            + 2 * Rotation2d.struct.getSize()
+            + cornerSchema.getSize();
   }
 
   @Override
   public String getSchema() {
-    return "int32 id;Transform3d primaryTransform;double primaryReprojError;Transform3d secondaryTransform;double secondaryReprojError;Rotation2d angleOffsetX;Rotation2d angleOffsetY;Translation2d c1;Translation2d c2;Translation2d c3;Translation2d c4";
+    return "int32 id;Transform3d primaryTransform;double primaryReprojError;Transform3d secondaryTransform;double secondaryReprojError;Rotation2d angleOffsetX;Rotation2d angleOffsetY;" + cornerSchema.getSchema();
   }
 
   @Override
@@ -41,13 +47,7 @@ public class IrisTargetStruct implements Struct<IrisTarget> {
     double secondaryReprojError = bb.getDouble();
     Rotation2d angleOffsetX = Rotation2d.struct.unpack(bb);
     Rotation2d angleOffsetY = Rotation2d.struct.unpack(bb);
-    Translation2d[] corners =
-        new Translation2d[] {
-          Translation2d.struct.unpack(bb),
-          Translation2d.struct.unpack(bb),
-          Translation2d.struct.unpack(bb),
-          Translation2d.struct.unpack(bb),
-        };
+    Matrix<N4, N2> corners = cornerSchema.unpack(bb);
     return new IrisTarget(
         id,
         primaryTransform,
@@ -68,8 +68,6 @@ public class IrisTargetStruct implements Struct<IrisTarget> {
     bb.putDouble(value.getSecondaryReprojError());
     Rotation2d.struct.pack(bb, value.getAngleOffsetX());
     Rotation2d.struct.pack(bb, value.getAngleOffsetY());
-    for (Translation2d c : value.getCorners()) {
-      Translation2d.struct.pack(bb, c);
-    }
+    cornerSchema.pack(bb, value.getCorners());
   }
 }

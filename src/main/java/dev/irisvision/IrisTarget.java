@@ -1,9 +1,11 @@
 package dev.irisvision;
 
 import dev.irisvision.struct.IrisTargetStruct;
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.numbers.N2;
+import edu.wpi.first.math.numbers.N4;
 import edu.wpi.first.util.struct.StructSerializable;
 
 public class IrisTarget implements StructSerializable {
@@ -15,17 +17,17 @@ public class IrisTarget implements StructSerializable {
   private final double secondaryReprojError;
   private final Rotation2d angleOffsetX;
   private final Rotation2d angleOffsetY;
-  private final Translation2d[] corners;
+  private final Matrix<N4, N2> corners;
 
   public IrisTarget(
-      int id,
-      Transform3d primaryTransform,
-      double primaryReprojError,
-      Transform3d secondaryTransform,
-      double secondaryReprojError,
-      Rotation2d angleOffsetX,
-      Rotation2d angleOffsetY,
-      Translation2d[] corners) {
+          int id,
+          Transform3d primaryTransform,
+          double primaryReprojError,
+          Transform3d secondaryTransform,
+          double secondaryReprojError,
+          Rotation2d angleOffsetX,
+          Rotation2d angleOffsetY,
+          Matrix<N4, N2> corners) {
     this.id = id;
     this.primaryTransform = primaryTransform;
     this.primaryReprojError = primaryReprojError;
@@ -33,10 +35,6 @@ public class IrisTarget implements StructSerializable {
     this.secondaryReprojError = secondaryReprojError;
     this.angleOffsetX = angleOffsetX;
     this.angleOffsetY = angleOffsetY;
-
-    if (corners.length != 4) {
-      throw new IllegalArgumentException("Corners array must contain at 4 elements");
-    }
     this.corners = corners;
   }
 
@@ -68,7 +66,7 @@ public class IrisTarget implements StructSerializable {
     return angleOffsetY;
   }
 
-  public Translation2d[] getCorners() {
+  public Matrix<N4, N2> getCorners() {
     return corners;
   }
 }
