@@ -27,15 +27,16 @@ public class IrisTargetStruct implements Struct<IrisTarget> {
   @Override
   public int getSize() {
     return kSizeInt32
-            + 2 * Transform3d.struct.getSize()
-            + 2 * kSizeDouble
-            + 2 * Rotation2d.struct.getSize()
-            + cornerSchema.getSize();
+        + 2 * Transform3d.struct.getSize()
+        + 2 * kSizeDouble
+        + 2 * Rotation2d.struct.getSize()
+        + cornerSchema.getSize();
   }
 
   @Override
   public String getSchema() {
-    return "int32 id;Transform3d primaryTransform;double primaryReprojError;Transform3d secondaryTransform;double secondaryReprojError;Rotation2d angleOffsetX;Rotation2d angleOffsetY;" + cornerSchema.getSchema();
+    return "int32 id;Transform3d primaryTransform;double primaryReprojError;Transform3d secondaryTransform;double secondaryReprojError;Rotation2d angleOffsetX;Rotation2d angleOffsetY;"
+        + cornerSchema.getSchema();
   }
 
   @Override

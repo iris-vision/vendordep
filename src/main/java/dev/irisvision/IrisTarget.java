@@ -20,14 +20,14 @@ public class IrisTarget implements StructSerializable {
   private final Matrix<N4, N2> corners;
 
   public IrisTarget(
-          int id,
-          Transform3d primaryTransform,
-          double primaryReprojError,
-          Transform3d secondaryTransform,
-          double secondaryReprojError,
-          Rotation2d angleOffsetX,
-          Rotation2d angleOffsetY,
-          Matrix<N4, N2> corners) {
+      int id,
+      Transform3d primaryTransform,
+      double primaryReprojError,
+      Transform3d secondaryTransform,
+      double secondaryReprojError,
+      Rotation2d angleOffsetX,
+      Rotation2d angleOffsetY,
+      Matrix<N4, N2> corners) {
     this.id = id;
     this.primaryTransform = primaryTransform;
     this.primaryReprojError = primaryReprojError;
