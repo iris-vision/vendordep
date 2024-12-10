@@ -1,5 +1,7 @@
 package dev.irisvision;
 
+import dev.irisvision.util.IrisPoseEstimationResult;
+import dev.irisvision.util.IrisTrackedTarget;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.networktables.*;
@@ -15,11 +17,11 @@ public class IrisCamera {
   private final NetworkTable publishedResultsTable;
   private final String deviceName;
 
-  private final StructSubscriber<IrisResult> result;
-  private final StructArraySubscriber<IrisTarget> targets;
+  private final StructSubscriber<IrisPoseEstimationResult> result;
+  private final StructArraySubscriber<IrisTrackedTarget> targets;
 
   private Transform3d cameraToRobot;
-  private Map<Integer, TimestampedObject<IrisTarget>> latestTargetsMap = new HashMap<>();
+  private Map<Integer, TimestampedObject<IrisTrackedTarget>> latestTargetsMap = new HashMap<>();
 
   /**
    * Constructs a new {@link IrisCamera}
@@ -37,11 +39,14 @@ public class IrisCamera {
     cameraOptionsTable = cameraInstance.getTable("/");
 
     publishedResultsTable = kRootTable.getSubTable(this.deviceName);
-    result = publishedResultsTable.getStructTopic("cameraPose", IrisResult.struct).subscribe(null);
+    result =
+        publishedResultsTable
+            .getStructTopic("cameraPose", IrisPoseEstimationResult.struct)
+            .subscribe(null);
     targets =
         publishedResultsTable
-            .getStructArrayTopic("targets", IrisTarget.struct)
-            .subscribe(new IrisTarget[0]);
+            .getStructArrayTopic("targets", IrisTrackedTarget.struct)
+            .subscribe(new IrisTrackedTarget[0]);
   }
 
   /**
@@ -103,17 +108,18 @@ public class IrisCamera {
   }
 
   /**
-   * Retrieves unread {@link IrisResult} packets sent over NetworkTables. Use this method instead of
-   * {@link #getLatestPose()} or {@link #getUnreadPoses()} when custom filtering of results is
-   * required.
+   * Retrieves unread {@link IrisPoseEstimationResult} packets sent over NetworkTables. Use this
+   * method instead of {@link #getLatestPose()} or {@link #getUnreadPoses()} when custom filtering
+   * of results is required.
    *
-   * @return A list of timestamped {@link IrisResult} objects received since the last time this
-   *     method was called
+   * <p>Note: this method returns the raw position of the camera, no robot-to-camera transforms are
+   * applied.
+   *
+   * @return A list of timestamped {@link IrisPoseEstimationResult} objects received since the last
+   *     time this method was called
    */
-  public List<TimestampedObject<IrisResult>> getRawUnfilteredResults() {
-    return Arrays.stream(result.readQueue())
-        .peek(r -> r.value.setTransform(cameraToRobot))
-        .toList();
+  public List<TimestampedObject<IrisPoseEstimationResult>> getRawUnfilteredResults() {
+    return Arrays.asList(result.readQueue());
   }
 
   // TODO: add filtering logic
@@ -125,7 +131,10 @@ public class IrisCamera {
    */
   public Optional<TimestampedObject<Pose3d>> getLatestPose() {
     return Optional.ofNullable(result.getAtomic(null))
-        .map(r -> new TimestampedObject<>(r.timestamp, r.serverTime, r.value.getPrimaryPose()));
+        .map(
+            r ->
+                new TimestampedObject<>(
+                    r.timestamp, r.serverTime, r.value.getPrimaryRobotPose(cameraToRobot)));
   }
 
   /**
@@ -135,12 +144,14 @@ public class IrisCamera {
    */
   public List<TimestampedObject<Pose3d>> getUnreadPoses() {
     return Arrays.stream(result.readQueue())
-        .peek(r -> r.value.setTransform(cameraToRobot))
-        .map(r -> new TimestampedObject<>(r.timestamp, r.serverTime, r.value.getPrimaryPose()))
+        .map(
+            r ->
+                new TimestampedObject<>(
+                    r.timestamp, r.serverTime, r.value.getPrimaryRobotPose(cameraToRobot)))
         .toList();
   }
 
-  public TimestampedObject<IrisTarget[]> getTargets() {
+  public TimestampedObject<IrisTrackedTarget[]> getTargets() {
     return targets.getAtomic();
   }
 }
