@@ -5,7 +5,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.util.struct.Struct;
 import java.nio.ByteBuffer;
 
-public class IrisResultStruct implements Struct<IrisPoseEstimationResult> {
+public class IrisPoseEstimateResultStruct implements Struct<IrisPoseEstimationResult> {
   @Override
   public Class<IrisPoseEstimationResult> getTypeClass() {
     return IrisPoseEstimationResult.class;
@@ -13,7 +13,7 @@ public class IrisResultStruct implements Struct<IrisPoseEstimationResult> {
 
   @Override
   public String getTypeName() {
-    return "IrisResult";
+    return "IrisPoseEstimationResult";
   }
 
   @Override
