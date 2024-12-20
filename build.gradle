@@ -98,6 +98,7 @@ scmVersion {
     tag {
         prefix.set("v")
     }
+    snapshotCreator({ versionFromTag, scmPosition -> "-SNAPSHOT-" + scmPosition.shortRevision })
 }
 
 // Set up exports properly
