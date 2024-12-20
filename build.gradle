@@ -2,7 +2,8 @@ plugins {
     id 'cpp'
     id 'java'
     id 'google-test'
-    id "com.diffplug.spotless" version '6.25.0'
+    id 'com.diffplug.spotless' version '6.25.0'
+    id 'pl.allegro.tech.build.axion-release' version '1.18.7'
     id 'edu.wpi.first.wpilib.repositories.WPILibRepositoriesPlugin' version '2020.2'
     id 'edu.wpi.first.NativeUtils' version '2025.9.0'
     id 'edu.wpi.first.GradleJni' version '1.1.0'
@@ -88,6 +89,14 @@ spotless {
         trimTrailingWhitespace()
         indentWithSpaces(2)
         endWithNewline()
+    }
+}
+
+apply plugin: 'pl.allegro.tech.build.axion-release'
+
+scmVersion {
+    tag {
+        prefix.set("v")
     }
 }
 
