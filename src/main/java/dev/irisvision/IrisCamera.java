@@ -1,5 +1,6 @@
 package dev.irisvision;
 
+import dev.irisvision.configs.FilteringConfig;
 import dev.irisvision.util.IrisPoseEstimationResult;
 import dev.irisvision.util.IrisTrackedTarget;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -21,12 +22,13 @@ public class IrisCamera {
   private final StructArraySubscriber<IrisTrackedTarget> targets;
 
   private Transform3d cameraToRobot;
+  private FilteringConfig filteringConfig = new FilteringConfig();
   private Map<Integer, TimestampedObject<IrisTrackedTarget>> latestTargetsMap = new HashMap<>();
 
   /**
    * Constructs a new {@link IrisCamera}
    *
-   * @param deviceName The device id of the perception client
+   * @param deviceName The device id of the Iris client
    * @param robotToCamera The 3d transform of the camera using the robot as a base frame
    */
   public IrisCamera(String deviceName, Transform3d robotToCamera) {
@@ -53,11 +55,15 @@ public class IrisCamera {
    * Constructs a new {@link IrisCamera} using the default {@link NetworkTableInstance} and device
    * name.
    *
-   * @param deviceName The device id of the perception client
+   * @param deviceName The device id of the Iris client
    */
   // TODO: Remove?
   public IrisCamera(String deviceName) {
     this(deviceName, new Transform3d());
+  }
+
+  public void setFilteringConfig(FilteringConfig config) {
+    this.filteringConfig = config;
   }
 
   /**
@@ -76,6 +82,10 @@ public class IrisCamera {
    */
   public void setRobotToCameraTransform(Transform3d robotToCamera) {
     this.cameraToRobot = robotToCamera.inverse();
+  }
+
+  public Transform3d getRobotToCameraTransform() {
+    return cameraToRobot.inverse();
   }
 
   /**
@@ -122,19 +132,19 @@ public class IrisCamera {
     return Arrays.asList(result.readQueue());
   }
 
-  // TODO: add filtering logic
   /**
    * Retrieves the last estimated 3D pose from the camera
    *
    * @return A timestamped {@link Pose3d} representing the robot's position on the field. {@link
-   *     Optional#empty()} if no AprilTags are seen.
+   *     Optional#empty()} if no AprilTags are seen or if the solver returns an invalid result.
    */
   public Optional<TimestampedObject<Pose3d>> getLatestPose() {
     return Optional.ofNullable(result.getAtomic(null))
-        .map(
+        .flatMap(
             r ->
-                new TimestampedObject<>(
-                    r.timestamp, r.serverTime, r.value.getPrimaryRobotPose(cameraToRobot)));
+                r.value
+                    .getBestRobotPose(cameraToRobot, filteringConfig)
+                    .map(pose -> new TimestampedObject<>(r.timestamp, r.serverTime, pose)));
   }
 
   /**
