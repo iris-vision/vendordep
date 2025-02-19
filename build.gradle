@@ -141,6 +141,12 @@ model {
     }
 }
 
+task spotlessBuild {
+    group = "irisvision"
+    dependsOn(tasks.spotlessApply, tasks.build)
+    tasks.build.mustRunAfter(tasks.spotlessApply)
+}
+
 apply from: 'publish.gradle'
 
 wrapper {

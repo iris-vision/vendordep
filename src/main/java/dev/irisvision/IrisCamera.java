@@ -21,6 +21,8 @@ public class IrisCamera {
   private final StructSubscriber<IrisPoseEstimationResult> result;
   private final StructArraySubscriber<IrisTrackedTarget> targets;
 
+  private final IntegerArrayPublisher ignoredTargetsPub;
+
   private Transform3d cameraToRobot;
   private FilteringConfig filteringConfig = new FilteringConfig();
   private Map<Integer, TimestampedObject<IrisTrackedTarget>> latestTargetsMap = new HashMap<>();
@@ -49,6 +51,8 @@ public class IrisCamera {
         publishedResultsTable
             .getStructArrayTopic("targets", IrisTrackedTarget.struct)
             .subscribe(new IrisTrackedTarget[0]);
+
+    ignoredTargetsPub = cameraOptionsTable.getIntegerArrayTopic("ignoredTargets").publish();
   }
 
   /**
@@ -64,6 +68,22 @@ public class IrisCamera {
 
   public void setFilteringConfig(FilteringConfig config) {
     this.filteringConfig = config;
+  }
+
+  /**
+   * Sets the specified targets to be ignored by the camera.
+   *
+   * @param ignoredTargets A set of integers representing the IDs of targets to be ignored.
+   */
+  public void setIgnoredTargets(Set<Integer> ignoredTargets) {
+    long[] ignored = new long[ignoredTargets.size()];
+    int i = 0;
+
+    for (Integer t : ignoredTargets) {
+      ignored[i++] = t.longValue();
+    }
+
+    ignoredTargetsPub.set(ignored);
   }
 
   /**
@@ -139,12 +159,16 @@ public class IrisCamera {
    *     Optional#empty()} if no AprilTags are seen or if the solver returns an invalid result.
    */
   public Optional<TimestampedObject<Pose3d>> getLatestPose() {
-    return Optional.ofNullable(result.getAtomic(null))
-        .flatMap(
-            r ->
-                r.value
-                    .getBestRobotPose(cameraToRobot, filteringConfig)
-                    .map(pose -> new TimestampedObject<>(r.timestamp, r.serverTime, pose)));
+    TimestampedObject<IrisPoseEstimationResult> r = result.getAtomic();
+
+    if (result.exists()) {
+      Optional<Pose3d> bestPose = r.value.getBestRobotPose(cameraToRobot, filteringConfig);
+      if (bestPose.isPresent()) {
+        return Optional.of(new TimestampedObject<>(r.timestamp, r.serverTime, bestPose.get()));
+      }
+    }
+
+    return Optional.empty();
   }
 
   /**
@@ -153,12 +177,17 @@ public class IrisCamera {
    * @return A list of timestamped {@link Pose3d} representing the robot's position on the field.
    */
   public List<TimestampedObject<Pose3d>> getUnreadPoses() {
-    return Arrays.stream(result.readQueue())
-        .map(
-            r ->
-                new TimestampedObject<>(
-                    r.timestamp, r.serverTime, r.value.getPrimaryRobotPose(cameraToRobot)))
-        .toList();
+    TimestampedObject<IrisPoseEstimationResult>[] results = result.readQueue();
+    List<TimestampedObject<Pose3d>> returnPoses = new ArrayList<>();
+
+    for (TimestampedObject<IrisPoseEstimationResult> r : results) {
+      r.value
+          .getBestRobotPose(cameraToRobot, filteringConfig)
+          .ifPresent(
+              pose3d ->
+                  returnPoses.add(new TimestampedObject<>(r.timestamp, r.serverTime, pose3d)));
+    }
+    return returnPoses;
   }
 
   public TimestampedObject<IrisTrackedTarget[]> getTargets() {
